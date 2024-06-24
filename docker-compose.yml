@@ -45,6 +45,38 @@ services:
       - zookeeper
       - kafka
     ports:
-      - 8082:8080
+      - "8082:8080"
     environment:
       DYNAMIC_CONFIG_ENABLED: true
+    volumes:
+      - kafka_ui_data:/data
+
+  redis:
+    container_name: redis
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=redispassword
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  redis-sentinel:
+    image: 'bitnami/redis-sentinel:latest'
+    container_name: redis-sentinel
+    environment:
+      - REDIS_MASTER_SET=mymaster
+      - REDIS_MASTER_HOST=127.0.0.1
+      - REDIS_MASTER_PASSWORD=redispassword
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=10000
+    depends_on:
+      - redis
+    ports:
+      - "26379:26379"
+
+volumes:
+  kafka_ui_data:
+    name: throttling_kafka_kafka_ui_data
+  redis_data:
+    name: throttling_kafka_redis_data
