@@ -1,5 +1,6 @@
 package com.example.processor
 
+import com.example.processor.config.ProcessorProperties
 import com.example.processor.config.kafka.KafkaProperties
 import com.example.processor.config.redis.RedisProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -10,6 +11,7 @@ import org.springframework.boot.runApplication
     value = [
         KafkaProperties::class,
         RedisProperties::class,
+        ProcessorProperties::class,
     ]
 )
 @SpringBootApplication
