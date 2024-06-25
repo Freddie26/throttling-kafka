@@ -14,6 +14,10 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
+    networks:
+      throttling:
+        aliases:
+          - zookeeper
 
   kafka:
     image: confluentinc/cp-kafka:7.6.1
@@ -37,6 +41,10 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     ports:
       - "9092:9092"
+    networks:
+      throttling:
+        aliases:
+          - kafka
 
   kafka-ui:
     container_name: kafka-ui
@@ -50,6 +58,10 @@ services:
       DYNAMIC_CONFIG_ENABLED: true
     volumes:
       - kafka_ui_data:/data
+    networks:
+      throttling:
+        aliases:
+          - kafka-ui
 
   redis:
     container_name: redis
@@ -61,6 +73,10 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      throttling:
+        aliases:
+          - redis
 
   redis-sentinel:
     image: 'bitnami/redis-sentinel:latest'
@@ -74,9 +90,54 @@ services:
       - redis
     ports:
       - "26379:26379"
+    networks:
+      throttling:
+        aliases:
+          - redis-sentinel
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus/
+    container_name: prometheus
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      throttling:
+        aliases:
+          - prometheus
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    user: root
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      throttling:
+        aliases:
+          - grafana
 
 volumes:
   kafka_ui_data:
     name: throttling_kafka_kafka_ui_data
   redis_data:
     name: throttling_kafka_redis_data
+
+networks:
+  throttling:
