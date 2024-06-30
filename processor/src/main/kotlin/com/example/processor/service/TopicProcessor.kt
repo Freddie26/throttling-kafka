@@ -14,7 +14,7 @@ class TopicProcessor(
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val throttler: Throttler,
     private val throttledMessagesRegistry: ThrottledMessagesRegistry,
-) : Runnable {
+) : Runnable, StoppableTask {
 
     private val consumer = ThreadLocal.withInitial { consumerFactory() }.get()
         .also { it.subscribe(listOf(fromTopic)) }
@@ -42,6 +42,7 @@ class TopicProcessor(
             } catch (e: Throwable) {
                 logger().error("An error occurred during processing of the dynamic topic \"$fromTopic\": ${e.message}", e)
             }
+            Thread.sleep(100)
         }
 
         logger().info("Processor ($this) for topic '$fromTopic' was stopped")
@@ -49,6 +50,8 @@ class TopicProcessor(
 
     private fun consumeAndProcess() {
         val messages = consumer.poll(Duration.ofSeconds(1)).toList()
+
+        logger().info("Consumed ${messages.count()} from $fromTopic")
 
         // разбиваем пачку сообщений на пакеты, которые можем обработать (должно хватать токенов)
         throttler.withThrottling(messages) { batch ->
@@ -86,7 +89,7 @@ class TopicProcessor(
         consumer.close()
     }
 
-    fun stop() {
+    override fun stop() {
         stopped = true
     }
 }

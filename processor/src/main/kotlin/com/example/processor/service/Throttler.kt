@@ -1,5 +1,6 @@
 package com.example.processor.service
 
+import com.example.processor.utils.logger
 import io.github.bucket4j.Bucket
 import org.apache.kafka.clients.consumer.ConsumerRecord
 
@@ -17,6 +18,8 @@ class Throttler(
             val limit = recordsLeft.coerceAtMost(tokensLimitToConsume).toLong()
             val available = bucket.tryConsumeAsMuchAsPossible(limit).toInt()
             if (available > 0) {
+                logger().debug("Got $available tokens")
+
                 val batch = messages.subList(startIndex, (startIndex + available).coerceAtMost(messages.size))
 
                 batchProcessor(batch)
@@ -25,6 +28,7 @@ class Throttler(
             } else {
                 // лимит пропускной способности исчерпан, не можем ничего отправить, нужно подождать
                 Thread.sleep(100)
+                logger().debug("No tokens available")
             }
         }
     }

@@ -14,6 +14,7 @@ class ProcessingRunner(
     private val processorFactory: ProcessorFactory,
 ) {
 
+    private val tasks = mutableListOf<TopicProcessor>()
     private val threadPool = Executors.newFixedThreadPool(
         processorProperties.topics.size * processorProperties.processorsPerTopic,
         CustomizableThreadFactory("processor-")
@@ -24,6 +25,7 @@ class ProcessingRunner(
         processorProperties.topics.forEach { item ->
             processorFactory.create(item.`in`, item.out)
                 .forEach {
+                    tasks.add(it)
                     threadPool.execute(it)
                 }
         }
@@ -31,6 +33,8 @@ class ProcessingRunner(
 
     @PreDestroy
     fun destroy() {
+        tasks.forEach { it.stop() }
+
         threadPool.shutdown()
         threadPool.awaitTermination(30, TimeUnit.SECONDS)
     }

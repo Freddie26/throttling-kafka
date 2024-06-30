@@ -17,9 +17,6 @@ data class KafkaProperties(
     @field:Max(5000)
     var maxPollRecords: Int = 50,
 
-    @field:NotBlank
-    val isolationLevel: String = "read_committed",
-
     /**
      * Кол-во потоков на каждый канал, которые обрабатывают правило.
      */

@@ -4,6 +4,7 @@ import com.example.processor.config.ProcessorProperties
 import com.example.processor.config.kafka.KafkaProperties
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.ConsumerConfig.DEFAULT_ISOLATION_LEVEL
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
@@ -48,7 +49,7 @@ class ProcessorFactory(
 
                 ConsumerConfig.MAX_POLL_RECORDS_CONFIG to kafkaProperties.maxPollRecords,
                 ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG to 3 * 60 * 60 * 1000, // 3 часа
-                ConsumerConfig.ISOLATION_LEVEL_CONFIG to kafkaProperties.isolationLevel,
+                ConsumerConfig.ISOLATION_LEVEL_CONFIG to DEFAULT_ISOLATION_LEVEL,
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
                 ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
 
