@@ -1,1 +1,48 @@
-spring.application.name=controller
+server:
+  port: ${C_SERVER_PORT:8080}
+
+spring:
+  application:
+    name: controller-service
+  main:
+    banner-mode: off
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+    health:
+      enabled: true
+      show-details: always
+      group:
+        liveness:
+          include:
+            - livenessState
+        readiness:
+          include:
+            - readinessState
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  health:
+    redis:
+      enabled: false
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
+datasource:
+  redis:
+    masterName: ${DATASOURCE_REDIS_MASTER_NAME:mymaster}
+    password: ${DATASOURCE_REDIS_PASSWORD:}
+    nodes:
+      - host: ${DATASOURCE_REDIS_NODES_0_HOST:}
+        port: ${DATASOURCE_REDIS_NODES_0_PORT:}
