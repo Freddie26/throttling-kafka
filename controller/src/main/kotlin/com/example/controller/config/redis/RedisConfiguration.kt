@@ -1,4 +1,4 @@
-package com.example.controller.config.datasource.redis
+package com.example.controller.config.redis
 
 import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager

@@ -1,4 +1,4 @@
-package com.example.controller.config.datasource.redis
+package com.example.controller.config.redis
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
