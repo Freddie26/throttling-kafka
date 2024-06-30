@@ -1,3 +1,6 @@
+server:
+  port: ${P_SERVER_PORT:8080}
+
 spring:
   application:
     name: processor-service
@@ -35,3 +38,22 @@ management:
       enabled: true
     readinessState:
       enabled: true
+
+kafka:
+  bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:}
+  maxPollRecords: ${KAFKA_MAX_POLL_RECORDS:50}
+
+datasource:
+  redis:
+    masterName: ${DATASOURCE_REDIS_MASTER_NAME:mymaster}
+    password: ${DATASOURCE_REDIS_PASSWORD:}
+    nodes:
+      - host: ${DATASOURCE_REDIS_NODES_0_HOST:}
+        port: ${DATASOURCE_REDIS_NODES_0_PORT:}
+
+processing:
+  tokensLimitToConsume: ${PROCESSING_TOKENS_LIMIT_TO_CONSUME:50}
+  processorsPerTopic: ${PROCESSING_PROCESSORS_PER_TOPIC:2}
+  topics:
+    - in: throttling-topic-1
+      out: ready-to-send-topic
